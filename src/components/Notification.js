@@ -1,6 +1,6 @@
 import React from 'react'
 
-const Notification = ({ message, type }) => {
+const Notification = ({ message, typeMessage }) => {
 
 
         let NotificationStyle = {
@@ -13,7 +13,7 @@ const Notification = ({ message, type }) => {
             marginBottom: 10
           }
 
-    if (type === 'good') {
+    if (typeMessage === 'good') {
          NotificationStyle = {...NotificationStyle, color: 'green'}
     }
 

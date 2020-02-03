@@ -12,24 +12,35 @@ function App() {
   const [username, setUsername] = useState('') 
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
-  const [blogs, setBlogs] = useState(null)
+  const [blogs, setBlogs] = useState([])
   const [title, setTitle] = useState('')
   const [author, setAuthor] = useState('')
   const [url, setUrl] = useState('')
   const [errorMessage, setErrorMessage] = useState(null)
+  const [typeMessage, setTypeMessage] = useState('bad')
+
+  useEffect(() => {
+    const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
+    if (loggedUserJSON) {
+      const user = JSON.parse(loggedUserJSON)
+      setUser(user)
+      BlogService.setToken(user.token)
+
+    }
+  }, [])
 
   useEffect(() => {
     BlogService
       .getAll().then(initialBlogs => {
         setBlogs(initialBlogs)
 
-        const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
-        if (loggedUserJSON) {
-          const user = JSON.parse(loggedUserJSON)
-          setUser(user)
-          BlogService.setToken(user.token)
+        // const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
+        // if (loggedUserJSON) {
+        //   const user = JSON.parse(loggedUserJSON)
+        //   setUser(user)
+        //   BlogService.setToken(user.token)
     
-        }
+        // }
 
       })
   }, [])
@@ -121,25 +132,47 @@ function App() {
     setUser(null)
   }
 
-  const addBlog = () => {
+  const addBlog = (event) => {
 
-    const b = {author : author, title: title, url: url}
-    BlogService.create(b).then(res => {
-      BlogService
-      .getAll().then(initialBlogs => {
-        setBlogs(initialBlogs)
-        setAuthor('')
-        setTitle('')
-        setUrl('')
-      
-    })
-  })
-}
+    event.preventDefault()
+
+      const b = {author : author, title: title, url: url}
+      BlogService.create(b).then(res => {
+      //   BlogService
+      //   .getAll().then(initialBlogs => {
+      //     setBlogs(initialBlogs)
+      //     setAuthor('')
+      //     setTitle('')
+      //     setUrl('')
+        
+      // })
+      setBlogs(blogs.concat(res))
+      setAuthor('')
+      setTitle('')
+      setUrl('')
+      setTypeMessage('good')
+      setErrorMessage('a new blog has been added')
+      setTimeout(() => {
+        setErrorMessage(null)
+        setTypeMessage('bad')
+      }, 5000)
+
+      }) 
+        .catch (exception => {
+          setErrorMessage(exception.response.data.error)
+          setAuthor('')
+          setTitle('')
+          setUrl('')
+          setTimeout(() => {
+            setErrorMessage(null)
+          }, 5000)
+        })
+  }
 
   return (
     <div className="App">
 
-      <Notification message={errorMessage} />
+      <Notification message={errorMessage} typeMessage={typeMessage} />
 
       {user === null ?
         loginForm() :

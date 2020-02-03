@@ -30,7 +30,7 @@ const CreateBlog = ({title, author, url, addBlog, setTitle, setAuthor, setUrl}) 
                 onChange={({ target }) => setUrl(target.value)}
             />
             </div>
-            <button type="submit">login</button>
+            <button type="submit">create</button>
 
         </form>
     )
